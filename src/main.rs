@@ -1,29 +1,35 @@
 use clap::{Arg, App};
+use std::fs;
 
 
 fn main() {
-  // Basic app information
+  // basic app information
   let app = App::new("deluge-email-generator")
         .version("1.0")
         .about("Translates handlebars to deluge")
         .author("Tyler Louwerse");
 
-  // Define the name command line option
-  let name_option = Arg::with_name("name")
-        .long("name")
+  // initialize src option
+  let src_option = Arg::with_name("src")
+        .long("src")
         .takes_value(true)
-        .help("Who to say hello to")
+        .help("File path to the handlebars file to be parsed")
         .required(true);
 
+
   // now add in the argument we want to parse
-  let app = app.arg(name_option);
+  let app = app.arg(src_option);
 
   // extract the matches
   let matches = app.get_matches();
 
   // extract the actual name
-  let name = matches.value_of("name")
+  let src_path = matches.value_of("src")
         .expect("This can't be None, we said it was required!");
-  
-  println!("Hello, {}", name);
+
+  // read file
+  let contents = fs::read_to_string(src_path)
+        .expect("Something went wrong reading the file!");
+
+  println!("File contents, \n{}", contents);
 }
